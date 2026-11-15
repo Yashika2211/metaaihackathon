@@ -73,6 +73,8 @@ export function makePose(name: PoseName, s: Stage = DEFAULT_STAGE, o: Opt = {}, 
   const handed = o.handedness ?? 'right';
   // For a right hand, palm facing "left" (-R) means side-on with thumb up when fingers point forward.
   const sideFacing = handed === 'right' ? scale(R, -1) : R;
+  // Profile poses point the fingers sideways, parallel to the wall: right hand → right.
+  const outward = handed === 'right' ? R : scale(R, -1);
   const curled = { index: 0.92, middle: 0.95, ring: 0.95, pinky: 0.95 };
 
   switch (name) {
@@ -94,7 +96,7 @@ export function makePose(name: PoseName, s: Stage = DEFAULT_STAGE, o: Opt = {}, 
       }, o);
     case 'snail':
       return oneHand(s, {
-        fingerDir: normalize(add(F, scale(U, 0.2))),
+        fingerDir: normalize(add(add(outward, scale(F, 0.5)), scale(U, 0.15))),
         palmFacing: scale(U, -1),
         curls: { index: 0.08, middle: 0.08, ring: 0.95, pinky: 0.95 },
         thumbTouch: 'ring',
@@ -111,8 +113,8 @@ export function makePose(name: PoseName, s: Stage = DEFAULT_STAGE, o: Opt = {}, 
     case 'dogBark': {
       const open = name === 'dogBark' ? 0.5 + 0.5 * Math.sin(phase * Math.PI * 2) : 0;
       return oneHand(s, {
-        fingerDir: F,
-        palmFacing: sideFacing,
+        fingerDir: normalize(add(outward, scale(U, 0.1))),
+        palmFacing: F,
         curls: { index: 0.05, middle: 0.05, ring: 0.06, pinky: 0.1 },
         spread: 0.02,
         pinkyAbduct: 0.75 * open,
@@ -122,8 +124,8 @@ export function makePose(name: PoseName, s: Stage = DEFAULT_STAGE, o: Opt = {}, 
     }
     case 'dogAlt':
       return oneHand(s, {
-        fingerDir: F,
-        palmFacing: sideFacing,
+        fingerDir: outward,
+        palmFacing: F,
         curls: curled,
         thumbDir: [-1, 0.05, 0],
         thumbCurl: 0,
