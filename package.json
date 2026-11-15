@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@iwsdk/core": "1.1.0",
+    "@iwsdk/xr-input": "1.1.0",
     "three": "npm:super-three@0.185.0"
   },
   "devDependencies": {
