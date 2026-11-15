@@ -297,7 +297,8 @@ export class Game {
       this.audio.setPaused(true);
       this.lantern.dim(0.55);
     }
-    this.menu.open(this.world.camera, title);
+    if (this.inXR) this.menu.open(this.world.camera, title);
+    else this.menu.open(this.world.camera, title, 0.42, 0.0);
     this.sfx.click();
   }
 
