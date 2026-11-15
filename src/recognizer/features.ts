@@ -100,12 +100,12 @@ export function computeFeatures(h: HandPose, frame: WallFrame): HandFeatures {
     indexDir[2] + middleDir[2],
   ]);
 
-  // Spread and jaw use the proximal phalanges: they show the fan of the fingers
-  // without being thrown off by how much each finger is curled.
-  const iK = dirOf(h, J.indexProx, J.indexInter);
-  const mK = dirOf(h, J.middleProx, J.middleInter);
-  const rK = dirOf(h, J.ringProx, J.ringInter);
-  const pK = dirOf(h, J.pinkyProx, J.pinkyInter);
+  // Spread and jaw use knuckle → distal joint: long enough to be robust to
+  // tracking noise, short enough not to be dominated by fingertip curl.
+  const iK = dirOf(h, J.indexProx, J.indexDist);
+  const mK = dirOf(h, J.middleProx, J.middleDist);
+  const rK = dirOf(h, J.ringProx, J.ringDist);
+  const pK = dirOf(h, J.pinkyProx, J.pinkyDist);
   const spread = (angleBetween(iK, mK) + angleBetween(mK, rK)) / 2;
   const jawAngle = angleBetween(rK, pK);
 
