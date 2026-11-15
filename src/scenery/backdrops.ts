@@ -132,10 +132,16 @@ function fence(ctx: Ctx): void {
 }
 
 /** The old oak: hollow on the right, branch where the owl perches. */
-export const OWL_PERCH = { x: 0.2, y: 0.07 };
+/** Branch tip after the 0.78 scale about the trunk base (0.27, GROUND_Y). */
+export const OWL_PERCH = { x: 0.27 + (0.14 - 0.27) * 0.78, y: GROUND_Y + (0.056 - GROUND_Y) * 0.78 };
 function oak(ctx: Ctx, rand: () => number): void {
   ctx.fillStyle = INK;
   const x = 0.27;
+  // Drawn at 75% around its base so the canopy stays on the paper.
+  ctx.save();
+  ctx.translate(x, GROUND_Y);
+  ctx.scale(0.78, 0.78);
+  ctx.translate(-x, -GROUND_Y);
   ctx.beginPath();
   ctx.moveTo(x - 0.09, GROUND_Y);
   ctx.quadraticCurveTo(x - 0.05, GROUND_Y + 0.05, x - 0.055, GROUND_Y + 0.2);
@@ -151,8 +157,8 @@ function oak(ctx: Ctx, rand: () => number): void {
   // Branch for the owl.
   ctx.beginPath();
   ctx.moveTo(x - 0.05, 0.06);
-  ctx.quadraticCurveTo(x - 0.1, 0.07, OWL_PERCH.x - 0.06, OWL_PERCH.y - 0.004);
-  ctx.lineTo(OWL_PERCH.x - 0.06, OWL_PERCH.y - 0.014);
+  ctx.quadraticCurveTo(x - 0.1, 0.07, 0.14, 0.066);
+  ctx.lineTo(0.14, 0.056);
   ctx.quadraticCurveTo(x - 0.09, 0.052, x - 0.05, 0.04);
   ctx.fill();
   // Hollow (light shows through).
@@ -170,6 +176,7 @@ function oak(ctx: Ctx, rand: () => number): void {
     ctx.arc(x + Math.cos(a) * r * 1.4, 0.28 + Math.sin(a) * r * 0.5, 0.02 + rand() * 0.025, 0, Math.PI * 2);
     ctx.fill();
   }
+  ctx.restore();
 }
 
 /** Roots with a tiny tunnel the snail must enter. */
@@ -178,8 +185,8 @@ function roots(ctx: Ctx, rand: () => number): void {
   ctx.fillStyle = INK;
   // Huge trunk base on the right.
   ctx.beginPath();
-  ctx.moveTo(0.05, GROUND_Y);
-  ctx.quadraticCurveTo(0.2, GROUND_Y + 0.05, 0.25, 0.35);
+  ctx.moveTo(0.09, GROUND_Y);
+  ctx.quadraticCurveTo(0.24, GROUND_Y + 0.04, 0.3, 0.35);
   ctx.lineTo(0.5, 0.35);
   ctx.lineTo(0.5, GROUND_Y);
   ctx.fill();
