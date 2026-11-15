@@ -144,6 +144,7 @@ export class FableEngine {
     const h = this.host;
     const start = h.clock.now;
     let hinted = false;
+    this.waitingFor = 'rabbit';
     await h.clock.until(() => {
       if (this.forceSolve) return true;
       if (h.aliveFor('rabbit') > 200) return true;
@@ -154,6 +155,7 @@ export class FableEngine {
       }
       return false;
     });
+    this.waitingFor = null;
     if (this.forceSolve) {
       this.forceSolve = false;
       return h.creatures.summon('rabbit', new Vector2(0, h.creatures.rabbit.groundY));
