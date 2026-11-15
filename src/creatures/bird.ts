@@ -8,6 +8,8 @@ export class Bird extends Puppet {
   private wing = 0;
   /** Point (wall-local, relative to pos) where a carried firefly hangs. */
   readonly carryOffset = new Vector2(0.0, 0.065);
+  /** Highest the bird flies under player control (wall-local metres). */
+  static readonly CEILING = 0.07;
 
   constructor() {
     super(30, 0.1);
@@ -19,7 +21,8 @@ export class Bird extends Puppet {
 
   protected behave(dt: number, input: CreatureInput): void {
     if (!this.scripted && input.target && this.alive) {
-      this.goal.set(input.target.x, Math.max(this.groundY + 0.06, input.target.y));
+      // Stay between the ground and the narration band at the top of the wall.
+      this.goal.set(input.target.x, Math.min(Bird.CEILING, Math.max(this.groundY + 0.06, input.target.y)));
     }
     if (!this.scripted) {
       const dx = this.goal.x - this.pos.x;
