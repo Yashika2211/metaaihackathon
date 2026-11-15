@@ -40,16 +40,19 @@ export class PalmMenu {
     this.draw();
   }
 
-  /** Open in front of the head, within arm's reach. */
-  open(head: Camera, title = 'Paused'): void {
+  /**
+   * Open in front of the head, within arm's reach. `drop` lowers it below eye
+   * level (in a headset you glance down; on desktop it stays in view).
+   */
+  open(head: Camera, title = 'Paused', distance = 0.36, drop = 0.14): void {
     this.title = title;
     const pos = new Vector3();
     head.getWorldPosition(pos);
     const fwd = new Vector3(0, 0, -1).applyQuaternion(head.getWorldQuaternion(this.group.quaternion.clone()));
     fwd.y = 0;
     fwd.normalize();
-    this.group.position.copy(pos).addScaledVector(fwd, 0.36);
-    this.group.position.y -= 0.14;
+    this.group.position.copy(pos).addScaledVector(fwd, distance);
+    this.group.position.y -= drop;
     this.group.lookAt(pos.x, this.group.position.y + 0.05, pos.z);
     this.isOpen = true;
     this.group.visible = true;
