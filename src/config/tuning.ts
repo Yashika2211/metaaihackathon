@@ -62,8 +62,8 @@ export const RECOGNIZER = {
   directionDot: 0.55,
   /** Palm facing the wall/viewer: |palmNormal · forward| above this. */
   palmFacingDot: 0.55,
-  /** Palm side-on (dog profile): |palmNormal · forward| below this. */
-  palmSideDot: 0.5,
+  /** "Level" fingers (dog snout, snail antennae): |direction · up| below this. */
+  levelDot: 0.5,
   /** Palm up (pause menu): palmNormal · up above this. */
   palmUpDot: 0.72,
   /** Hold time for the palm-up menu gesture. */

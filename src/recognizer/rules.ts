@@ -48,31 +48,38 @@ export function rabbitAlt(f: HandFeatures): number {
 
 // --- Snail ----------------------------------------------------------------
 
-/** Classic snail: index + middle antennae pointing at the wall from a fist. */
+/**
+ * Classic snail: index + middle antennae held level (pointing sideways or at
+ * the wall) from a fist. Ears up would be a rabbit instead.
+ */
 export function snailClassic(f: HandFeatures): number {
   return Math.min(
     extended(f.curl.index),
     extended(f.curl.middle),
     curled(f.curl.ring),
     curled(f.curl.pinky),
-    atLeast(f.pointForward, T.directionDot),
+    atMost(Math.abs(f.pointUp), T.levelDot),
   );
 }
 
-/** One-handed alternative: point one finger at the wall. */
+/** One-handed alternative: point one finger, level (e.g. at the wall). */
 export function snailAlt(f: HandFeatures): number {
   return Math.min(
     extended(f.curl.index),
     curled(f.curl.middle),
     curled(f.curl.ring),
     curled(f.curl.pinky),
-    atLeast(f.indexForward, T.directionDot + 0.1),
+    atMost(Math.abs(f.indexUp), T.levelDot),
   ) * 0.94;
 }
 
 // --- Dog ------------------------------------------------------------------
 
-/** Classic dog: flat hand side-on, fingers together; the pinky is the jaw. */
+/**
+ * Classic dog: flat hand in profile to the light (palm toward the wall or
+ * toward you), fingers together and level as the snout, thumb up as the ear.
+ * The pinky is the jaw.
+ */
 export function dogClassic(f: HandFeatures): number {
   return Math.min(
     extended(f.curl.index),
@@ -80,13 +87,12 @@ export function dogClassic(f: HandFeatures): number {
     extended(f.curl.ring),
     atMost(f.curl.pinky, 0.55, 0.15),
     atMost(f.spread, T.spreadTight, 0.1),
-    atMost(Math.abs(f.palmFacing), T.palmSideDot),
-    atMost(Math.abs(f.palmUp), 0.6),
-    atMost(f.pointUp, 0.65),
+    atLeast(Math.abs(f.palmFacing), T.palmFacingDot),
+    atMost(Math.abs(f.pointUp), T.levelDot + 0.1),
   );
 }
 
-/** One-handed alternative: thumbs-up fist, side-on. */
+/** One-handed alternative: thumbs-up fist. */
 export function dogAlt(f: HandFeatures): number {
   return Math.min(
     curled(f.curl.index),
@@ -144,19 +150,23 @@ export function palmUpScore(f: HandFeatures): number {
 /** Score every creature for one frame. */
 export function scoreAll(left: HandFeatures | null, right: HandFeatures | null): RuleScore[] {
   const out: RuleScore[] = [];
+  // Hooked thumbs are unmistakable: a two-handed bird suppresses the
+  // single-hand readings of its wings (each wing alone looks like a dog).
+  const bird = left && right ? birdClassic(left, right) : 0;
+  const keep = 1 - bird;
   for (const f of [left, right]) {
     if (!f) continue;
     const hands = f.handedness;
-    out.push({ creature: 'rabbit', variant: 'classic', score: rabbitClassic(f), hands });
-    out.push({ creature: 'rabbit', variant: 'oneHanded', score: rabbitAlt(f), hands });
-    out.push({ creature: 'snail', variant: 'classic', score: snailClassic(f), hands });
-    out.push({ creature: 'snail', variant: 'oneHanded', score: snailAlt(f), hands });
-    out.push({ creature: 'dog', variant: 'classic', score: dogClassic(f), hands });
-    out.push({ creature: 'dog', variant: 'oneHanded', score: dogAlt(f), hands });
+    out.push({ creature: 'rabbit', variant: 'classic', score: rabbitClassic(f) * keep, hands });
+    out.push({ creature: 'rabbit', variant: 'oneHanded', score: rabbitAlt(f) * keep, hands });
+    out.push({ creature: 'snail', variant: 'classic', score: snailClassic(f) * keep, hands });
+    out.push({ creature: 'snail', variant: 'oneHanded', score: snailAlt(f) * keep, hands });
+    out.push({ creature: 'dog', variant: 'classic', score: dogClassic(f) * keep, hands });
+    out.push({ creature: 'dog', variant: 'oneHanded', score: dogAlt(f) * keep, hands });
     out.push({ creature: 'bird', variant: 'oneHanded', score: birdAlt(f), hands });
   }
   if (left && right) {
-    out.push({ creature: 'bird', variant: 'classic', score: birdClassic(left, right), hands: 'both' });
+    out.push({ creature: 'bird', variant: 'classic', score: bird, hands: 'both' });
   }
   return out;
 }
