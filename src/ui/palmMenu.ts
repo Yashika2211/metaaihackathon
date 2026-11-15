@@ -30,6 +30,8 @@ export class PalmMenu {
   private wasInside = false;
   isOpen = false;
   title = 'Paused';
+  /** Footer hint; desktop shows "Click a button". */
+  hint = 'Touch a button with a fingertip';
 
   constructor() {
     this.mat = new MeshBasicMaterial({ map: this.tex.texture, transparent: true, depthWrite: false, opacity: 0, depthTest: false });
@@ -153,7 +155,7 @@ export class PalmMenu {
     });
     ctx.fillStyle = 'rgba(246,231,200,0.6)';
     ctx.font = `italic 26px ${FONT}`;
-    ctx.fillText('Touch a button with a fingertip', width / 2, height * 0.965);
+    ctx.fillText(this.hint, width / 2, height * 0.965);
     this.tex.commit();
   }
 }
