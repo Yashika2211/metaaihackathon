@@ -130,7 +130,7 @@ export function makePose(name: PoseName, s: Stage = DEFAULT_STAGE, o: Opt = {}, 
       }, o);
     case 'birdAlt':
     case 'flatFacing': {
-      const flap = name === 'birdAlt' ? 0.25 * (0.5 + 0.5 * Math.sin(phase * Math.PI * 2)) : 0;
+      const flap = name === 'birdAlt' ? 0.4 * (0.5 + 0.5 * Math.sin(phase * Math.PI * 2)) : 0;
       return oneHand(s, {
         fingerDir: U,
         palmFacing: F,
