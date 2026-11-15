@@ -85,6 +85,8 @@ export class Game {
   private lastHandsSeen = -1e9;
   private chimeIndex = 0;
   private runId = 0;
+  /** Frames to wait before recentering (the head pose settles after session start). */
+  private recenterIn = -1;
 
   constructor(readonly world: World, readonly mode: GameMode, readonly flags: GameFlags) {
     Lantern.configureRenderer(world.renderer);
@@ -371,8 +373,11 @@ export class Game {
     const inXR = !!this.world.session;
     if (inXR !== this.inXR) {
       this.inXR = inXR;
-      if (inXR) requestAnimationFrame(() => this.recenter());
+      // window.requestAnimationFrame is paused during immersive sessions, so
+      // count XR frames instead and recenter once the head pose has settled.
+      if (inXR) this.recenterIn = 3;
     }
+    if (this.recenterIn >= 0 && this.recenterIn-- === 0) this.recenter();
     // Session hidden (Quest system menu / headset off): pause and silence.
     const vis = this.world.visibilityState.value as string;
     const hidden = inXR && vis !== 'visible';
