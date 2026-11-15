@@ -138,7 +138,7 @@ export function makePose(name: PoseName, s: Stage = DEFAULT_STAGE, o: Opt = {}, 
         palmFacing: F,
         curls: { index: flap, middle: flap, ring: flap, pinky: flap },
         thumbDir: [-1, 0.25, 0],
-        spread: name === 'birdAlt' ? 0.34 : 0.0,
+        spread: name === 'birdAlt' ? 0.48 : 0.0,
       }, o);
     }
     case 'bird':
