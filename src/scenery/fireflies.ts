@@ -110,8 +110,8 @@ export class Fireflies {
     this.lumiGlowShown += (this.lumiGlow - this.lumiGlowShown) * Math.min(1, dt * 1.2);
     const pulse = 0.8 + 0.2 * Math.sin(this.t * 4.2);
     const target = this.lumiVisible ? 1 : 0;
-    this.lumiMat.opacity += (target * (0.35 + 0.65 * this.lumiGlowShown) * pulse - this.lumiMat.opacity) * Math.min(1, dt * 4);
-    this.lumi.scale.setScalar(0.018 + 0.03 * this.lumiGlowShown);
+    this.lumiMat.opacity += (target * (0.5 + 0.5 * this.lumiGlowShown) * pulse - this.lumiMat.opacity) * Math.min(1, dt * 4);
+    this.lumi.scale.setScalar(0.03 + 0.035 * this.lumiGlowShown);
     this.lumi.visible = this.lumiMat.opacity > 0.01;
 
     // Swarm.
