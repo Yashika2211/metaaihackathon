@@ -162,12 +162,13 @@ export function makePose(name: PoseName, s: Stage = DEFAULT_STAGE, o: Opt = {}, 
       return { left: make('left'), right: make('right'), time: 0 };
     }
     case 'relaxed':
+      // A gently open, upright hand: reads as a hand on the wall, never as a creature.
       return oneHand(s, {
-        fingerDir: normalize(add(U, scale(F, 0.25))),
-        palmFacing: normalize(add(F, scale(sideFacing, 0.3))),
-        curls: { index: 0.35, middle: 0.42, ring: 0.48, pinky: 0.5 },
-        thumbCurl: 0.3,
-        spread: 0.1,
+        fingerDir: normalize(add(U, scale(F, 0.12))),
+        palmFacing: F,
+        curls: { index: 0.2, middle: 0.26, ring: 0.32, pinky: 0.38 },
+        thumbCurl: 0.25,
+        spread: 0.0,
       }, o);
     case 'fist':
       return oneHand(s, {
