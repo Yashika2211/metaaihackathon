@@ -63,22 +63,25 @@ export function paintParchment(width = 1024, height = 672): CanvasTex {
   ctx.fillStyle = rim;
   ctx.fillRect(0, 0, width, height);
 
-  // Ragged, slightly transparent edge so the wall feels like hung paper in passthrough.
-  ctx.globalCompositeOperation = 'destination-out';
-  const edge = 14;
-  for (let x = 0; x < width; x += 6) {
-    const t = rand() * edge;
-    const b = rand() * edge;
-    ctx.fillStyle = 'rgba(0,0,0,0.9)';
-    ctx.fillRect(x, 0, 7, t);
-    ctx.fillRect(x, height - b, 7, b);
-  }
-  for (let y = 0; y < height; y += 6) {
-    const l = rand() * edge;
-    const r = rand() * edge;
-    ctx.fillRect(0, y, l, 7);
-    ctx.fillRect(width - r, y, r, 7);
-  }
+  // Soft, torn-paper edge: a wobbly outline mask, feathered with a blur.
+  const mask = document.createElement('canvas');
+  mask.width = width;
+  mask.height = height;
+  const m = mask.getContext('2d')!;
+  const inset = 16;
+  const wobble = (i: number) => (Math.sin(i * 0.37) + Math.sin(i * 0.11 + 1.7) * 0.8 + (rand() - 0.5) * 0.9) * 3.2;
+  m.filter = 'blur(2.5px)';
+  m.fillStyle = '#000';
+  m.beginPath();
+  let i = 0;
+  for (let x = inset; x <= width - inset; x += 8) m.lineTo(x, inset + wobble(i++));
+  for (let y = inset; y <= height - inset; y += 8) m.lineTo(width - inset + wobble(i++), y);
+  for (let x = width - inset; x >= inset; x -= 8) m.lineTo(x, height - inset + wobble(i++));
+  for (let y = height - inset; y >= inset; y -= 8) m.lineTo(inset + wobble(i++), y);
+  m.closePath();
+  m.fill();
+  ctx.globalCompositeOperation = 'destination-in';
+  ctx.drawImage(mask, 0, 0);
   ctx.globalCompositeOperation = 'source-over';
   tex.commit();
   return tex;
