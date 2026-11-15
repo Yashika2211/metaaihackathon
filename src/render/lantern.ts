@@ -100,11 +100,10 @@ export class Lantern {
     renderer.shadowMap.type = PCFShadowMap;
   }
 
-  /** Point the light at a world position (the wall centre). */
-  aimAt(world: Vector3): void {
-    this.target.position.copy(world);
-    if (!this.target.parent) this.group.parent?.add(this.target);
-    this.target.updateMatrixWorld();
+  /** Aim the light at an object by parenting the light target to it. */
+  aimAt(object: Object3D): void {
+    object.add(this.target);
+    this.target.position.set(0, 0, 0);
   }
 
   ignite(): void {
