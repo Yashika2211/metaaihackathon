@@ -45,6 +45,8 @@ export interface HandFeatures {
   /** pointDir · forward */
   pointForward: number;
   indexForward: number;
+  /** indexDir · up */
+  indexUp: number;
   /** thumbDir · up */
   thumbUp: number;
   wrist: Vec3;
@@ -139,6 +141,7 @@ export function computeFeatures(h: HandPose, frame: WallFrame): HandFeatures {
     pointUp: dot(pointDir, up),
     pointForward: dot(pointDir, fwd),
     indexForward: dot(indexDir, fwd),
+    indexUp: dot(indexDir, up),
     thumbUp: dot(thumbDir, up),
     wrist: h.joints[J.wrist],
     thumbTip: tt,
