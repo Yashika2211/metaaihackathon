@@ -54,3 +54,15 @@ test('pause and resume from the keyboard', async ({ page }) => {
   await page.keyboard.press('p');
   await expect.poll(async () => (await probe(page)).paused).toBe(false);
 });
+
+test('makes no third-party network requests (everything is generated in code)', async ({ page, baseURL }) => {
+  const origin = new URL(baseURL!).origin;
+  const foreign: string[] = [];
+  page.on('request', (r) => {
+    const u = r.url();
+    if (!u.startsWith(origin) && !u.startsWith('data:') && !u.startsWith('blob:')) foreign.push(u);
+  });
+  await page.goto('/?demo=1');
+  await expect.poll(async () => (await probe(page)).phase, { timeout: 60_000 }).toBe('story');
+  expect(foreign).toEqual([]);
+});
