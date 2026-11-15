@@ -79,7 +79,7 @@ export function dogClassic(f: HandFeatures): number {
     extended(f.curl.middle),
     extended(f.curl.ring),
     atMost(f.curl.pinky, 0.55, 0.15),
-    atMost(f.spread, T.spreadTight, 0.08),
+    atMost(f.spread, T.spreadTight, 0.1),
     atMost(Math.abs(f.palmFacing), T.palmSideDot),
     atMost(Math.abs(f.palmUp), 0.6),
     atMost(f.pointUp, 0.65),
@@ -93,7 +93,6 @@ export function dogAlt(f: HandFeatures): number {
     curled(f.curl.middle),
     curled(f.curl.ring),
     curled(f.curl.pinky),
-    atMost(f.curl.thumb, 0.35),
     atLeast(f.thumbUp, 0.6),
     // Thumb tip must be clear of the fingers (not tucked into the fist).
     atLeast(f.thumbTo.middle, 0.75, 0.2),
@@ -127,7 +126,8 @@ export function birdAlt(f: HandFeatures): number {
     ramp(wingCount(f), 2.8, 3.4),
     atLeast(f.spread, T.spreadWide, 0.07),
     atLeast(Math.abs(f.palmFacing), T.palmFacingDot),
-    atMost(f.curl.thumb, 0.5),
+    // Thumb free of the index finger (rules out the OK sign).
+    atLeast(f.thumbTo.index, 0.75, 0.2),
   ) * 0.94;
 }
 
