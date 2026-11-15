@@ -74,14 +74,14 @@ export class JournalView {
       const info = CREATURE_INFO[id];
       const met = data.creatures.includes(id);
       const x = 60 + (i % 2) * colW;
-      const y = 196 + Math.floor(i / 2) * 200;
+      const y = 190 + Math.floor(i / 2) * 212;
       ctx.globalAlpha = met ? 1 : 0.45;
       ctx.font = `bold 36px ${FONT}`;
       ctx.fillText(met ? info.name : `${info.name} (not yet met)`, x, y);
       ctx.font = `24px ${FONT}`;
-      wrapText(ctx, `Classic: ${info.classic}`, x, y + 34, colW - 30, 28, 3);
+      const used = wrapText(ctx, `Classic: ${info.classic}`, x, y + 34, colW - 30, 28, 4);
       ctx.font = `italic 24px ${FONT}`;
-      wrapText(ctx, `One hand: ${info.oneHanded}`, x, y + 34 + 28 * 3 + 4, colW - 30, 28, 2);
+      wrapText(ctx, `One hand: ${info.oneHanded}`, x, y + 34 + 28 * used + 6, colW - 30, 28, 2);
       ctx.globalAlpha = 1;
     });
 
@@ -89,10 +89,12 @@ export class JournalView {
     ctx.textAlign = 'center';
     const done = FABLES.filter((f) => data.fablesCompleted.includes(f.id)).map((f) => f.title);
     ctx.font = `30px ${FONT}`;
-    ctx.fillText(done.length ? `Fables told: ${done.join(', ')}` : 'No fables finished yet. The firefly is waiting.', width / 2, height - 150);
+    ctx.fillText(done.length ? `Fables told: ${done.join(', ')}` : 'No fables finished yet. The firefly is waiting.', width / 2, height - 170);
     const tonight = COMING_SOON[Journal.teaserIndex(COMING_SOON.length)];
     ctx.font = `italic 30px ${FONT}`;
-    ctx.fillText(`Tonight's fable: “${tonight.title}” — ${tonight.teaser}`, width / 2, height - 104);
+    ctx.fillText(`Tonight's fable: “${tonight.title}”`, width / 2, height - 128);
+    ctx.font = `italic 26px ${FONT}`;
+    ctx.fillText(tonight.teaser, width / 2, height - 94);
     ctx.font = `24px ${FONT}`;
     ctx.globalAlpha = 0.7;
     ctx.fillText('Pinch the lantern to close · Palm up for the menu', width / 2, height - 52);
@@ -101,7 +103,8 @@ export class JournalView {
   }
 }
 
-function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxW: number, lh: number, maxLines: number): void {
+/** Draw wrapped text; returns the number of lines drawn. */
+function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxW: number, lh: number, maxLines: number): number {
   const words = text.split(' ');
   let line = '';
   let n = 0;
@@ -111,10 +114,14 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: num
       ctx.fillText(line, x, y + n * lh);
       n++;
       line = w;
-      if (n >= maxLines) return;
+      if (n >= maxLines) return n;
     } else {
       line = test;
     }
   }
-  if (line && n < maxLines) ctx.fillText(line, x, y + n * lh);
+  if (line && n < maxLines) {
+    ctx.fillText(line, x, y + n * lh);
+    n++;
+  }
+  return n;
 }
