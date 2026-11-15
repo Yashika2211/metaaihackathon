@@ -126,6 +126,9 @@ export class Game {
     );
     this.bindPointer();
     this.bindVisibility();
+    if (mode === 'desktop') this.menu.hint = 'Click a button (or press P)';
+    // Fixed foveation keeps fill-rate low on Quest; the wall is always near the centre of view.
+    world.renderer.xr.setFoveation?.(0.6);
   }
 
   // --- Setup helpers -----------------------------------------------------------
