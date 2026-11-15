@@ -53,7 +53,7 @@ export class SyntheticDriver {
     const target = makePose(this.pose, this.stage, { offset: add(off, sway) }, phase);
     let out: HandsFrame = { ...target, time: now };
     if (this.prev) {
-      const t = Math.min(1, (now - this.blendStart) / this.blendMs);
+      const t = Math.max(0, Math.min(1, (now - this.blendStart) / this.blendMs));
       const e = t * t * (3 - 2 * t);
       const mix = (a: HandPose | null, b: HandPose | null): HandPose | null =>
         a && b ? blendHands(a, b, e) : t < 0.5 ? a : b;
