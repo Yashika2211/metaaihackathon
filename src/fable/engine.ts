@@ -84,9 +84,25 @@ export class FableEngine {
     this.waitingFor = goal;
     h.subtitles.setPrompt(prompt);
     const info = CREATURE_INFO[goal];
+    let handsLostSince: number | null = null;
+    let showingHandsPrompt = false;
     await h.clock.until(() => {
       const elapsed = h.clock.now - start;
       if (this.forceSolve) return true;
+      // Hands dropped out of tracking for a while: gently ask for them back.
+      if (!h.handsVisible()) {
+        handsLostSince ??= h.clock.now;
+        if (!showingHandsPrompt && h.clock.now - handsLostSince > 4000) {
+          showingHandsPrompt = true;
+          h.subtitles.setPrompt('Raise your hands into the lantern light.');
+        }
+      } else {
+        handsLostSince = null;
+        if (showingHandsPrompt) {
+          showingHandsPrompt = false;
+          h.subtitles.setPrompt(stage >= 2 ? `One hand? ${info.oneHanded}` : prompt);
+        }
+      }
       const alive = h.aliveFor(goal);
       if (alive > 0) h.ghost(null, 0);
       if (alive >= FABLE.goalHoldMs && (!needsBark || h.barks() > 0)) return true;
