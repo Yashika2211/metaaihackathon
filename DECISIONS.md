@@ -26,3 +26,21 @@ A running log of design and engineering choices, newest at the bottom.
    (peace sign up → rabbit, spread palm → bird, thumbs-up → dog, point at wall → snail).
 10. **Four puzzle beats instead of three.** The brief asked for three; a fourth short snail beat lets every
     creature appear once in the fable and keeps the run at ~4 minutes.
+11. **Profile poses for dog and snail.** Real shadow puppets are made with the hand parallel to the wall. The
+    first rules wanted the dog "side-on" with fingers pointing at the wall, whose shadow is foreshortened into
+    a blob. Screenshots of the projected shadows made this obvious; the dog is now a flat hand facing the wall
+    with fingers pointing sideways, and the snail's antennae just need to be level.
+12. **Two-handed bird wins.** Each wing hand of the bird also looks like a dog. Hooked thumbs are unmistakable,
+    so the bird score multiplicatively suppresses all single-hand scores.
+13. **Spread thresholds from noise.** Seeded 3 mm joint noise moves the measured finger spread of a relaxed hand
+    up to ~0.19 rad, so the one-handed bird needs ≥ 0.27 rad (a deliberately spread hand measures 0.35+).
+14. **No CDN input models.** IWSDK's input layer downloads controller/hand GLBs from a public CDN. The player's
+    real hands are visible in passthrough and the shadows are the hand visuals, so
+    `XRInputVisualAdapter.createVisual` is replaced with a no-op. An e2e test asserts zero third-party requests.
+15. **Audio and autoplay.** Audio starts on the "Light the lantern" gesture. `?demo=1` auto-starts for recording,
+    so its audio unlocks on the first click or key press.
+16. **Recenter on XR frames.** `window.requestAnimationFrame` is paused during immersive sessions, so the
+    session-start recenter counts XR ticks instead.
+17. **Palm-up only opens the menu when no creature is bound**, so a flapping bird or a dog that tilts doesn't
+    accidentally pause the story.
+18. **Fixed foveation 0.6** to keep fill-rate low on Quest; the wall sits near the centre of view.
