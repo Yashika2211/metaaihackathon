@@ -1,4 +1,5 @@
 import { createSystem, SessionMode, World } from '@iwsdk/core';
+import { XRInputVisualAdapter } from '@iwsdk/xr-input';
 import { Game, type GameMode } from './game/game';
 
 /**
@@ -25,6 +26,12 @@ async function detectMode(): Promise<GameMode> {
   }
   return 'desktop';
 }
+
+// The player's real hands are visible in passthrough and their shadows are the
+// game's hand visuals, so skip IWSDK's controller/hand models entirely. (They
+// would otherwise be downloaded from a public CDN, and the rules ask for no
+// third-party services.) Hand tracking itself is unaffected.
+XRInputVisualAdapter.createVisual = async () => undefined;
 
 async function boot(): Promise<void> {
   const status = document.getElementById('status')!;
