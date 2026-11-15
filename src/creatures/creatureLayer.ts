@@ -23,6 +23,8 @@ export class CreatureLayer {
   readonly all: Record<CreatureId, Puppet>;
   /** The creature currently bound to the player's hands. */
   active: Puppet | null = null;
+  /** Creatures performing a story script: they ignore the player's hands. */
+  private held = new Set<Puppet>();
 
   constructor() {
     this.all = { rabbit: this.rabbit, bird: this.bird, dog: this.dog, snail: this.snail };
@@ -35,8 +37,9 @@ export class CreatureLayer {
   /** Bring a creature to life at a wall-local point (the hand's shadow). */
   summon(id: CreatureId, at: Vector2): Puppet {
     const p = this.all[id];
-    if (this.active && this.active !== p && !this.active.scripted) this.active.leave();
+    if (this.active && this.active !== p && !this.held.has(this.active)) this.active.leave();
     this.bloom.burst(at);
+    if (this.held.has(p)) return p; // busy in the story; don't steal it back
     if (!p.alive) p.spawn(at);
     this.active = p;
     return p;
@@ -46,11 +49,28 @@ export class CreatureLayer {
   release(id: CreatureId): void {
     const p = this.all[id];
     if (this.active === p) this.active = null;
-    if (!p.scripted) p.leave();
+    if (!this.held.has(p)) p.leave();
+  }
+
+  /** Give a creature to the story script. */
+  hold(p: Puppet): void {
+    this.held.add(p);
+    if (this.active === p) this.active = null;
+  }
+
+  isHeld(p: Puppet): boolean {
+    return this.held.has(p);
+  }
+
+  /** Story is done with its creatures: they melt away. */
+  releaseHeld(): void {
+    for (const p of this.held) p.leave();
+    this.held.clear();
   }
 
   dismissAll(): void {
     for (const p of Object.values(this.all)) p.leave();
+    this.held.clear();
     this.active = null;
   }
 
