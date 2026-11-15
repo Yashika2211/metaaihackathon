@@ -81,6 +81,8 @@ export class Lantern {
     this.group.add(this.halo);
 
     this.light = new SpotLight(WARM, 0, 3, SHADOW.lightAngle, SHADOW.lightPenumbra, 1.2);
+    // SpotLight defaults to (0, 1, 0); the flame sits at the lantern's centre.
+    this.light.position.set(0, 0, 0);
     this.light.castShadow = true;
     this.light.shadow.mapSize.set(SHADOW.mapSize, SHADOW.mapSize);
     this.light.shadow.bias = SHADOW.bias;
