@@ -163,8 +163,8 @@ export function makePose(name: PoseName, s: Stage = DEFAULT_STAGE, o: Opt = {}, 
     }
     case 'relaxed':
       return oneHand(s, {
-        fingerDir: normalize(add(U, scale(F, 0.6))),
-        palmFacing: normalize(add(scale(U, -0.5), sideFacing)),
+        fingerDir: normalize(add(U, scale(F, 0.25))),
+        palmFacing: normalize(add(F, scale(sideFacing, 0.3))),
         curls: { index: 0.35, middle: 0.42, ring: 0.48, pinky: 0.5 },
         thumbCurl: 0.3,
         spread: 0.1,
