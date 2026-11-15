@@ -48,16 +48,14 @@ function ground(ctx: Ctx, rand: () => number, from = -0.5, to = 0.5): void {
 }
 
 function moon(ctx: Ctx, x: number, y: number, r: number, glow = 0.5): void {
-  const g = ctx.createRadialGradient(x, y, r * 0.2, x, y, r * 3);
-  g.addColorStop(0, `rgba(255,250,225,${glow})`);
+  // The moon is light, not shadow: a pale glowing disc on the paper.
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r * 3.2);
+  g.addColorStop(0, `rgba(255,252,236,${glow + 0.35})`);
+  g.addColorStop(0.3, `rgba(255,248,222,${glow})`);
+  g.addColorStop(0.36, `rgba(255,240,200,${glow * 0.35})`);
   g.addColorStop(1, 'rgba(255,240,200,0)');
   ctx.fillStyle = g;
-  ctx.fillRect(x - r * 3, y - r * 3, r * 6, r * 6);
-  ctx.strokeStyle = 'rgba(40,20,8,0.45)';
-  ctx.lineWidth = 0.002;
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI * 2);
-  ctx.stroke();
+  ctx.fillRect(x - r * 3.2, y - r * 3.2, r * 6.4, r * 6.4);
 }
 
 function farHills(ctx: Ctx, rand: () => number): void {
@@ -75,20 +73,21 @@ function river(ctx: Ctx, x0: number, x1: number, rand: () => number): void {
   ctx.save();
   ctx.globalCompositeOperation = 'destination-out';
   ctx.beginPath();
-  ctx.moveTo(x0, GROUND_Y + 0.01);
-  ctx.quadraticCurveTo((x0 + x1) / 2, GROUND_Y - 0.03, x1, GROUND_Y + 0.01);
-  ctx.lineTo(x1 - 0.02, -0.4);
-  ctx.lineTo(x0 + 0.02, -0.4);
+  ctx.moveTo(x0 - 0.02, GROUND_Y + 0.004);
+  ctx.bezierCurveTo(x0 + 0.03, GROUND_Y - 0.002, x0 + 0.02, GROUND_Y - 0.13, (x0 + x1) / 2, GROUND_Y - 0.13);
+  ctx.bezierCurveTo(x1 - 0.02, GROUND_Y - 0.13, x1 - 0.03, GROUND_Y - 0.002, x1 + 0.02, GROUND_Y + 0.004);
+  ctx.closePath();
   ctx.fill();
   ctx.restore();
   ctx.strokeStyle = INK;
   ctx.lineWidth = 0.003;
-  for (let i = 0; i < 7; i++) {
-    const y = GROUND_Y - 0.025 - i * 0.017;
+  for (let i = 0; i < 5; i++) {
+    const y = GROUND_Y - 0.02 - i * 0.02;
+    const inset = 0.03 + i * 0.012;
     ctx.beginPath();
-    for (let x = x0 + 0.03; x < x1 - 0.03; x += 0.008) {
+    for (let x = x0 + inset; x < x1 - inset; x += 0.008) {
       const yy = y + Math.sin(x * 70 + i) * 0.003;
-      if (x === x0 + 0.03) ctx.moveTo(x, yy);
+      if (x === x0 + inset) ctx.moveTo(x, yy);
       else ctx.lineTo(x, yy);
     }
     ctx.stroke();
