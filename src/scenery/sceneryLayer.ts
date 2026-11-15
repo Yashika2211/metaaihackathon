@@ -33,11 +33,24 @@ export class SceneryLayer {
     this.front = 1 - this.front;
     const p = this.planes[this.front];
     paintScene(p.tex.ctx, p.tex.width, p.tex.height, this.wallW, scene);
+    this.trimToPaper(p.tex.ctx, p.tex.width, p.tex.height);
     p.tex.commit();
     // The incoming plane draws on top.
     p.mesh.renderOrder = 1.5;
     this.planes[1 - this.front].mesh.renderOrder = 1;
     this.fade = 0;
+  }
+
+  /** Keep the backdrop inside the torn paper edge (soft inset mask). */
+  private trimToPaper(ctx: CanvasRenderingContext2D, w: number, h: number): void {
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.filter = 'blur(3px)';
+    ctx.fillStyle = '#000';
+    const inset = 22;
+    ctx.fillRect(inset, inset, w - inset * 2, h - inset * 2);
+    ctx.restore();
   }
 
   hide(): void {
