@@ -13,6 +13,8 @@ export const LAYOUT = {
   /** Lantern position relative to the head (forward, down). */
   lanternForward: 0.16,
   lanternDrop: 0.3,
+  /** Where hands naturally sit: this far from the lantern toward the wall. */
+  handFromLantern: 0.2,
   /** Seated head height used before any head pose is known (desktop preview). */
   defaultHeadHeight: 1.2,
 };

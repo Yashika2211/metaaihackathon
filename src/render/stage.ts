@@ -47,9 +47,13 @@ export class Stage {
     this.group.position.copy(headPos);
     this.group.rotation.set(0, Math.atan2(-this.forward.x, -this.forward.z), 0);
     this.group.updateMatrixWorld(true);
-    // Hands rest roughly halfway between lantern and wall, a little below the eyes.
-    this.handZone.copy(headPos).addScaledVector(this.forward, (LAYOUT.lanternForward + LAYOUT.wallDistance) / 2 - 0.05);
-    this.handZone.y -= LAYOUT.wallDrop + 0.02;
+    // Hands rest on the line from the lantern to the wall centre, so their
+    // shadow lands in the middle of the wall (about 2.3× life size).
+    const t = LAYOUT.handFromLantern / (LAYOUT.wallDistance - LAYOUT.lanternForward);
+    const fwd = LAYOUT.lanternForward + (LAYOUT.wallDistance - LAYOUT.lanternForward) * t;
+    const drop = LAYOUT.lanternDrop + (LAYOUT.wallDrop - LAYOUT.lanternDrop) * t;
+    this.handZone.copy(headPos).addScaledVector(this.forward, fwd);
+    this.handZone.y -= drop;
     this.placed = true;
   }
 
