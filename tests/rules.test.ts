@@ -98,4 +98,17 @@ describe('rules: near-miss negatives never reach the entry threshold', () => {
     const s = scoreAll(null, computeFeatures(f.right!, FRAME)).find((x) => x.creature === 'dog')!;
     expect(s.score).toBeLessThan(0.1);
   });
+
+  it('a palm-up hand (menu gesture) is not a dog', () => {
+    const f = makePose('palmUp');
+    const s = scoreAll(null, computeFeatures(f.right!, FRAME)).find((x) => x.creature === 'dog' && x.variant === 'classic')!;
+    expect(s.score).toBeLessThan(0.1);
+  });
+
+  it('two hooked hands are one bird, not two dogs', () => {
+    const f = makePose('bird');
+    const all = scoreAll(computeFeatures(f.left!, FRAME), computeFeatures(f.right!, FRAME));
+    const dog = Math.max(...all.filter((x) => x.creature === 'dog').map((x) => x.score));
+    expect(dog).toBeLessThan(0.05);
+  });
 });
