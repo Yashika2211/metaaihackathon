@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+
+# IDE and OS files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs, coverage, test output
+*.log
+coverage/
+test-results/
+playwright-report/
+
+# IWSDK dev tooling caches
+.iwsdk/
+.mcp.json
