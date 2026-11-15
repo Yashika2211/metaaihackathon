@@ -69,7 +69,7 @@ export const RECOGNIZER = {
   /** Average adjacent-finger spread angle (radians) that counts as "spread". */
   spreadWide: 0.2,
   /** Spread below this counts as "fingers together". */
-  spreadTight: 0.14,
+  spreadTight: 0.18,
   /** Dog jaw: pinky angle away from ring finger (radians) that counts as open. */
   jawOpenAngle: 0.42,
   jawCloseAngle: 0.24,
