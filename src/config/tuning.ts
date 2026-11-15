@@ -69,7 +69,7 @@ export const RECOGNIZER = {
   /** Hold time for the palm-up menu gesture. */
   palmUpHoldMs: 650,
   /** Average adjacent-finger spread angle (radians) that counts as "spread". */
-  spreadWide: 0.2,
+  spreadWide: 0.27,
   /** Spread below this counts as "fingers together". */
   spreadTight: 0.18,
   /** Dog jaw: pinky angle away from ring finger (radians) that counts as open. */
