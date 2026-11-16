@@ -24,6 +24,14 @@ export class DemoDirector {
   private relaxAt = 0;
   private showcaseStart = 0;
   private showcaseIndex = -1;
+  /** True while the one-handed showcase runs. */
+  showcasing = false;
+  /** True while the journal is shown at the end (video mode). */
+  showingJournal = false;
+  /** Set once the whole demo, including the journal, is over. */
+  finished = false;
+  /** Called to open/close the journal page at the end of the demo. */
+  onJournal: ((open: boolean) => void) | null = null;
 
   constructor(
     private engine: FableEngine,
@@ -74,6 +82,7 @@ export class DemoDirector {
     const i = Math.floor((now - this.showcaseStart) / 4000);
     if (i === this.showcaseIndex) return;
     this.showcaseIndex = i;
+    this.showcasing = i < ALT.length;
     if (i < ALT.length) {
       const [id, pose] = ALT[i];
       this.hands.setPose(pose, now, 500);
@@ -81,6 +90,16 @@ export class DemoDirector {
     } else if (i === ALT.length) {
       this.hands.setPose('relaxed', now, 600);
       this.subtitles.say('Every creature can be made with one hand.');
+      if (this.onJournal) {
+        this.showingJournal = true;
+        this.onJournal(true);
+      }
+    } else if (i === ALT.length + 2 && this.onJournal) {
+      this.showingJournal = false;
+      this.onJournal(false);
+      this.finished = true;
+    } else if (i === ALT.length + 1 && !this.onJournal) {
+      this.finished = true;
     }
   }
 }
