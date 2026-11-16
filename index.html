@@ -36,6 +36,24 @@
       #modes { margin-top: 1rem; font-size: 0.9rem; color: var(--ink-dim); }
       #modes a { color: var(--ink); }
       #status { margin-top: 0.6rem; font-size: 0.85rem; color: var(--ink-dim); min-height: 1.2em; }
+      #video-layer { position: fixed; inset: 0; pointer-events: none; display: none; }
+      #video-title, #video-end {
+        position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        text-align: center; opacity: 0; transition: opacity 0.9s ease;
+      }
+      #video-title { justify-content: flex-start; padding-top: 7vh; }
+      #video-title h1, #video-end h1 { margin: 0; font-weight: 400; letter-spacing: 0.12em; font-size: 4.2rem; text-shadow: 0 0 24px rgba(242,180,90,0.6); }
+      #video-title p, #video-end p { margin: 0.4rem 0 0; font-style: italic; color: var(--ink-dim); font-size: 1.5rem; }
+      #video-end { background: rgba(18,12,8,0.94); }
+      #video-end .url { font-style: normal; color: var(--ember); margin-top: 1.4rem; font-size: 1.3rem; }
+      #video-title.show, #video-end.show { opacity: 1; }
+      #video-caption {
+        position: absolute; left: 50%; bottom: 5.5vh; transform: translateX(-50%); max-width: 80vw;
+        padding: 0.55rem 1.4rem; border-radius: 999px; background: rgba(18,12,8,0.78); color: var(--ink);
+        font-size: 1.35rem; opacity: 0; transition: opacity 0.4s ease; white-space: nowrap;
+      }
+      #video-caption.show { opacity: 1; }
+      #video-badge { position: absolute; right: 14px; top: 12px; font-size: 0.85rem; color: rgba(246,231,200,0.55); font-style: italic; }
       #debug {
         position: fixed; top: 8px; left: 8px; font: 12px/1.35 ui-monospace, Menlo, monospace; white-space: pre;
         background: rgba(0, 0, 0, 0.62); color: #e9f3d8; padding: 8px 10px; border-radius: 6px; display: none;
@@ -55,6 +73,16 @@
       <div id="status"></div>
     </div>
     <pre id="debug"></pre>
+    <div id="video-layer">
+      <div id="video-title"><h1>SHADOWFOLK</h1><p>Your hands are the characters.</p></div>
+      <div id="video-caption"></div>
+      <div id="video-badge">Desktop preview · scripted hands · on Quest your real hands cast the shadows</div>
+      <div id="video-end">
+        <h1>SHADOWFOLK</h1>
+        <p>Hand-shadow stories in mixed reality · hands only · seated</p>
+        <p class="url">Play free in Meta Quest Browser: yashika2211.github.io/metaaihackathon</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
