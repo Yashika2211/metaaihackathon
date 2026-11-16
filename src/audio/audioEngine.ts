@@ -21,6 +21,36 @@ export class AudioEngine {
   private upv = new V3();
   private pos = new V3();
   private muted = false;
+  private output: AudioNode | null = null;
+  private recorder: MediaRecorder | null = null;
+  private chunks: Blob[] = [];
+
+  /** Record everything the game plays (used by ?video=1 to build the submission video). */
+  startCapture(): boolean {
+    if (!this.ctx || !this.output || this.recorder) return false;
+    const dest = this.ctx.createMediaStreamDestination();
+    this.output.connect(dest);
+    this.recorder = new MediaRecorder(dest.stream, { mimeType: 'audio/webm' });
+    this.chunks = [];
+    this.recorder.ondataavailable = (e) => e.data.size && this.chunks.push(e.data);
+    this.recorder.start(1000);
+    return true;
+  }
+
+  /** Stop recording and return the audio as a base64 webm string. */
+  async stopCapture(): Promise<string | null> {
+    const r = this.recorder;
+    if (!r) return null;
+    await new Promise<void>((resolve) => {
+      r.onstop = () => resolve();
+      r.stop();
+    });
+    const buf = await new Blob(this.chunks, { type: 'audio/webm' }).arrayBuffer();
+    let bin = '';
+    const bytes = new Uint8Array(buf);
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  }
 
   /** Must be called from a user gesture (the start button). */
   unlock(): void {
@@ -43,6 +73,7 @@ export class AudioEngine {
     comp.threshold.value = -12;
     comp.ratio.value = 4;
     this.master.connect(comp).connect(c.destination);
+    this.output = comp;
 
     this.ambienceBus = c.createGain();
     this.ambienceBus.gain.value = AUDIO.ambience;
