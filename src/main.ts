@@ -12,7 +12,9 @@ import { Game, type GameMode } from './game/game';
 const params = new URLSearchParams(location.search);
 const flags = {
   debug: params.has('debug'),
-  demo: params.has('demo'),
+  // ?video=1 is the demo plus title card, captions and an end card, for recording.
+  demo: params.has('demo') || params.has('video'),
+  video: params.has('video'),
 };
 
 async function detectMode(): Promise<GameMode> {

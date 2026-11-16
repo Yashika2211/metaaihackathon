@@ -8,6 +8,7 @@ import type { Vec3 } from '../core/vec';
 import { CreatureLayer } from '../creatures/creatureLayer';
 import { DebugOverlay } from '../debug/debugOverlay';
 import { DemoDirector } from '../debug/demo';
+import { VideoCaptions } from '../debug/videoCaptions';
 import { bindKeyboard } from '../debug/keyboard';
 import { SyntheticDriver } from '../debug/syntheticDriver';
 import { GameClock } from '../fable/clock';
@@ -37,6 +38,7 @@ export type GameMode = 'ar' | 'vr' | 'desktop';
 export interface GameFlags {
   debug: boolean;
   demo: boolean;
+  video?: boolean;
 }
 
 /** Distance (m) from a pinch to the lantern that counts as "tapping" it. */
@@ -65,6 +67,12 @@ export class Game {
   readonly synthetic: SyntheticDriver;
   readonly engine: FableEngine;
   private demo: DemoDirector | null = null;
+  private captions: VideoCaptions | null = null;
+  private endShown = false;
+  /** Read by scripts/record-video.mjs to know when the end card is up. */
+  get endShownForVideo(): boolean {
+    return this.endShown;
+  }
   private xrHands = new XRHandReader();
   private debugOverlay: DebugOverlay | null = null;
   private started = false;
@@ -111,7 +119,13 @@ export class Game {
     if (flags.debug) this.debugOverlay = new DebugOverlay();
 
     this.engine = new FableEngine(this.host());
-    if (flags.demo) this.demo = new DemoDirector(this.engine, this.synthetic, this.subtitles);
+    if (flags.demo) this.demo = new DemoDirector(this.engine, this.synthetic, this.subtitles, flags.video ? 2000 : 2600);
+    if (flags.video && this.demo) {
+      this.captions = new VideoCaptions(this.engine);
+      this.demo.onJournal = (open) => {
+        if (open !== this.journalView.isOpen) this.toggleJournal();
+      };
+    }
 
     bindKeyboard(
       {
@@ -399,6 +413,13 @@ export class Game {
       this.clock.tick(dtMs);
       this.updatePlay(dtMs);
       this.demo?.update(now);
+      if (this.captions && this.demo) {
+        this.captions.update(now, { showcase: this.demo.showcasing, journal: this.demo.showingJournal });
+        if (this.demo.finished && !this.endShown) {
+          this.endShown = true;
+          this.captions.showEnd();
+        }
+      }
     } else {
       // Keep the palm-up gesture responsive (so a second palm-up does nothing odd).
       this.recognizer.update(this.hands);
