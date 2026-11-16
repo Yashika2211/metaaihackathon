@@ -1,12 +1,14 @@
 // Records the ?video=1 demo into a submission-ready MP4 (video + the game's own synthesized audio).
-// Usage: node scripts/record-video.mjs <baseUrl> <outDir>
+// Usage: node scripts/record-video.mjs <baseUrl> <outDir> [xr]
+// With "xr" (against `npm run dev`), the demo runs inside a real immersive session in the IWER emulator.
 // Needs ffmpeg on PATH. The page must be served over https (vite preview) or from GitHub Pages.
 import { chromium } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readdirSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const [base = 'https://localhost:4173/', outDir = 'video-out'] = process.argv.slice(2);
+const [base = 'https://localhost:4173/', outDir = 'video-out', mode = ''] = process.argv.slice(2);
+const xr = mode === 'xr';
 mkdirSync(outDir, { recursive: true });
 const raw = join(outDir, 'raw');
 mkdirSync(raw, { recursive: true });
@@ -31,6 +33,15 @@ await page.waitForFunction(() => window.shadowfolk?.game, null, { timeout: 60_00
 // A click gives the page user activation so the synthesized audio can start, then we tap the mix.
 await page.mouse.click(5, 5);
 await page.waitForFunction(() => window.shadowfolk.game.audio.ready, null, { timeout: 10_000 });
+if (xr) {
+  await page.evaluate(() => window.shadowfolk.world.launchXR());
+  await page.waitForFunction(() => !!window.shadowfolk.world.session, null, { timeout: 20_000 });
+  await page.evaluate(() => {
+    const b = document.getElementById('video-badge');
+    if (b) b.textContent = 'Meta IWER XR emulator · immersive-ar session · scripted hands (on Quest your real hands cast the shadows)';
+  });
+  console.log('entered emulated XR session');
+}
 const captureStarted = await page.evaluate(() => window.shadowfolk.game.audio.startCapture());
 const tStart = (Date.now() - t0) / 1000;
 console.log('capture started', captureStarted, 'at', tStart.toFixed(2), 's');
